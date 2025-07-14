@@ -5,6 +5,7 @@ import NotFound from './components/NotFound.vue';
 import RegisterForm from './components/auth/RegisterForm.vue';
 import UserForm from './components/UserForm.vue';
 import UsersList from './components/UsersList.vue';
+import UsersView from './components/users/UsersView.vue';
 
 const routes: RouteRecordRaw[] = [
     { path: '/auth', component: AuthForm },
@@ -15,6 +16,7 @@ const routes: RouteRecordRaw[] = [
             { path: '', component: UsersList },
             { path: ':id', component: UserForm, props: true },
         ],
+        component: UsersView
     },
     { path: '/:pathMatch(.*)*', component: NotFound }
 ]
