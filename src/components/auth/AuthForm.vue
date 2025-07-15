@@ -2,16 +2,20 @@
 import { Button, Form, FormItem, Input, InputPassword, Space } from 'ant-design-vue';
 import type { FormProps } from 'ant-design-vue';
 import { ref } from 'vue';
+import type { Ref } from 'vue';
 import { useRouter } from 'vue-router';
-// import { useAuth } from '../../hooks/useAuth';
+import { useAuth } from '../../hooks/useAuth';
+import type { UserValue } from '../../types';
+
+type AuthUserValue = Pick<UserValue, 'password' | 'username'>;
 
 const router = useRouter();
 
-// const { login } = useAuth();
+const { login } = useAuth();
 
-const model = ref({ password: '', username: '' });
+const model: Ref<AuthUserValue> = ref({ password: '', username: '' });
 
-const rules: FormProps['rules'] = {    
+const rules: FormProps['rules'] = {
     password: {
         message: 'Password can\'t be empty',
         validator(_, value: string) {
@@ -30,9 +34,9 @@ function goToRegisterForm() {
     router.push('/register');
 }
 
-function handlerFinish(values: any) {
-    console.log('AUTHORIZE', values);
-    //login(model.login, model.password);
+async function handlerFinish(values: AuthUserValue) {
+    await login(values.username, values.password);
+    router.push('/users');
 }
 </script>
 

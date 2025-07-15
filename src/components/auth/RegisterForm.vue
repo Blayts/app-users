@@ -3,10 +3,17 @@ import { Button, Form, FormItem, Input, InputPassword, Space } from 'ant-design-
 import type { FormProps } from 'ant-design-vue';
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';
+import type { Ref } from 'vue';
+import type { RegisterUserValue } from '../../types';
 
 const router = useRouter();
 
-const model = ref({ name: '', password: '', repeatPassword: '', username: '' });
+const model: Ref<RegisterUserValue> = ref({
+    name: '', 
+    password: '', 
+    repeatPassword: '', 
+    username: '' 
+});
 
 const rules: FormProps['rules'] = {
     name: {
@@ -41,7 +48,7 @@ function goBack() {
     router.back();
 }
 
-function handlerFinish(values: any) {
+function handlerFinish(values: RegisterUserValue) {
     console.log('REGISTER', values);
 }
 

@@ -4,7 +4,7 @@ import { delay } from '../utils';
 
 type AuthState = {
     logged: ComputedRef<boolean>;
-    login(): Promise<void>;
+    login(username: string, password: string): Promise<void>;
     logout(): Promise<void>;
 };
 
@@ -15,8 +15,9 @@ function createState() {
 
     state = {
         logged: computed(() => isLogged.value),
-        async login() {
+        async login(username: string, password: string) {
             await delay(150);
+            console.log('LOGIN', username, password);
             isLogged.value = true;
         },
         async logout() {
