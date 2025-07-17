@@ -29,6 +29,8 @@ describe('Use users', () => {
     });
     const appUser2 = createAppUser({ ...user2, id: 2 });
 
+    appUser1.admin = true;
+
     it('Create and get all', async () => {
         const { createUser, getUsers } = useUsers();
 
@@ -39,6 +41,7 @@ describe('Use users', () => {
 
         expect(users.length).toBe(2);
         expect(users[0]).toEqual({
+            admin: true,
             age: 0,
             comment: '',
             id: 1,
@@ -84,4 +87,20 @@ describe('Use users', () => {
         await expect(validate('user#1', 'test1')).rejects.toThrow(ErrorTexts.invalidCreds);        
         await expect(validate('user#1', 'test')).resolves.toEqual(appUser1);
     });
+    it('Check change admin role', async () => {
+        const { createUser, getUsers, removeUser } = useUsers();
+
+        await createUser(user2);
+
+        let users = await getUsers();
+        
+        expect(users[0].admin).toBeTruthy();
+        expect(users[1].admin).toBeFalsy();
+
+        removeUser(users[0].id);
+
+        users = await getUsers();
+
+        expect(users[0].admin).toBeTruthy();
+    })
 })

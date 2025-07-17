@@ -46,7 +46,10 @@ function createState() {
             if(typeof(username) !== 'string' || state.hash[username]) {
                 throw new Error(ErrorTexts.userExist);
             }
+
             const user = createAppUser({ ...value, id: state.id++ });
+
+            user.admin = !state.values.length;
             state.hash[user.username] = value.password.toString();
             state.values.push(user);
             writeState();
@@ -63,6 +66,11 @@ function createState() {
 
             delete state.hash[user.username];
             state.values.splice(index, 1);
+
+            if(user.admin && state.values.length) {
+                state.values[index].admin = true;
+            }
+
             writeState();
             return user.id;
         },

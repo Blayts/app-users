@@ -1,4 +1,5 @@
 export type UserValue = {
+    admin: boolean;
     age: number;
     comment: string;
     id: number;
@@ -14,6 +15,7 @@ export type RegisterUserValue = Pick<UserValue, 'name' | 'password' | 'username'
 
 export function createAppUser(data: Record<string, number | string>): AppUserValue {
     return {
+        admin: false,
         age: +data.age || 0,
         comment: data.comment?.toString() ?? '',
         id: +data.id,
