@@ -1,19 +1,23 @@
 <script setup lang="ts">
-import { Button, Form, FormItem, Input, InputPassword, Space } from 'ant-design-vue';
+import { Button, Form, FormItem, Input, InputPassword, notification, Space } from 'ant-design-vue';
 import type { FormProps } from 'ant-design-vue';
-import { ref } from 'vue';
+import { ref, shallowRef } from 'vue';
 import type { Ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuth } from '../../hooks/useAuth';
 import type { UserValue } from '../../types';
+import { ErrorTexts } from '../../constants';
 
 type AuthUserValue = Pick<UserValue, 'password' | 'username'>;
 
 const router = useRouter();
 
 const { login } = useAuth();
+const [apiNotification, ContextHolder] = notification.useNotification();
 
 const model: Ref<AuthUserValue> = ref({ password: '', username: '' });
+
+const loading = shallowRef(false);
 
 const rules: FormProps['rules'] = {
     password: {
@@ -35,8 +39,21 @@ function goToRegisterForm() {
 }
 
 async function handlerFinish(values: AuthUserValue) {
-    await login(values.username, values.password);
-    router.push('/users');
+    loading.value = true;
+
+    try {
+        await login(values.username, values.password);
+        router.push('/users');
+    }
+    catch(e: any) {
+        apiNotification.error({
+            duration: 1,
+            message: e.message || ErrorTexts.unknown
+        });
+    }
+    finally {
+        loading.value = false;
+    }
 }
 </script>
 
@@ -61,12 +78,13 @@ async function handlerFinish(values: AuthUserValue) {
                 </FormItem>
                 <FormItem :wrapper-col="{ offset: 8 }">
                     <Space>
-                        <Button html-type="submit">Log in</Button>
-                        <Button @click="goToRegisterForm" type="link">Register</Button>
+                        <Button :disabled="loading" html-type="submit" type="primary">Log in</Button>
+                        <Button @click="goToRegisterForm" :disabled="loading" type="link">Register</Button>
                     </Space>
                 </FormItem>
             </Form>
         </main>
+        <ContextHolder></ContextHolder>
     </section>
 </template>
 

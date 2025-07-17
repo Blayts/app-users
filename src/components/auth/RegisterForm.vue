@@ -1,12 +1,18 @@
 <script setup lang="ts">
-import { Button, Form, FormItem, Input, InputPassword, Space } from 'ant-design-vue';
+import { Button, Form, FormItem, Input, InputPassword, Space, notification } from 'ant-design-vue';
 import type { FormProps } from 'ant-design-vue';
 import { useRouter } from 'vue-router';
-import { ref } from 'vue';
+import { ref, shallowRef } from 'vue';
 import type { Ref } from 'vue';
+import { ErrorTexts } from '../../constants';
+import { useUsers } from '../../hooks/useUsers';
 import type { RegisterUserValue } from '../../types';
 
 const router = useRouter();
+
+const { createUser } = useUsers();
+
+const [apiNotification, ContextHolder] = notification.useNotification();
 
 const model: Ref<RegisterUserValue> = ref({
     name: '', 
@@ -15,6 +21,9 @@ const model: Ref<RegisterUserValue> = ref({
     username: '' 
 });
 
+const loading = shallowRef(false);
+
+const labelCol: FormProps['labelCol'] = { span: 8 };
 const rules: FormProps['rules'] = {
     name: {
         message: 'Name must be filled',
@@ -48,10 +57,25 @@ function goBack() {
     router.back();
 }
 
-function handlerFinish(values: RegisterUserValue) {
-    console.log('REGISTER', values);
+async function handlerFinish(values: RegisterUserValue) {
+    try {
+        await createUser(values);
+        apiNotification.info({
+            duration: 1,
+            onClose: () => router.push('/auth'),
+            message: 'User successfully created!'
+        });
+    }
+    catch(e: any) {
+        apiNotification.error({
+            duration: 1,
+            message: e.message || ErrorTexts.unknown
+        });
+    }
+    finally {
+        loading.value = false;
+    }
 }
-
 </script>
 
 <template>
@@ -61,25 +85,25 @@ function handlerFinish(values: RegisterUserValue) {
         </header>
         <main>
             <Form @finish="handlerFinish" :model="model" :rules="rules">
-                <FormItem label="Username" name="username" :label-col="{ span: 8 }">
+                <FormItem label="Username" name="username" :label-col="labelCol">
                     <Input 
                         autocomplete="off" 
                         v-model:value="model.username"
                     ></Input>
                 </FormItem>
-                <FormItem label="Name" name="name" :label-col="{ span: 8 }">
+                <FormItem label="Name" name="name" :label-col="labelCol">
                     <Input 
                         autocomplete="off" 
                         v-model:value="model.name"
                     ></Input>
                 </FormItem>
-                <FormItem label="Password" name="password" :label-col="{ span: 8 }">
+                <FormItem label="Password" name="password" :label-col="labelCol">
                     <InputPassword
                         autocomplete="off" 
                         v-model:value="model.password" 
                     ></InputPassword>
                 </FormItem>
-                <FormItem label="Repeat pass" name="repeatPassword" :label-col="{ span: 8 }">
+                <FormItem label="Repeat pass" name="repeatPassword" :label-col="labelCol">
                     <InputPassword
                         autocomplete="off" 
                         v-model:value="model.repeatPassword" 
@@ -87,12 +111,13 @@ function handlerFinish(values: RegisterUserValue) {
                 </FormItem>        
                 <FormItem :wrapper-col="{ offset: 8 }">
                     <Space>
-                        <Button html-type="submit" type="primary">Register</Button>
-                        <Button @click="goBack">Back</Button>
+                        <Button :disabled="loading" html-type="submit" type="primary">Register</Button>
+                        <Button @click="goBack" :disabled="loading">Back</Button>
                     </Space>
                 </FormItem>
             </Form>
         </main>
+        <ContextHolder></ContextHolder>
     </section>
 </template>
 
