@@ -105,11 +105,11 @@ getUser();
         <FormItem label="Name" name="name">
             <Input v-model:value="model.name"></Input>
         </FormItem>
-        <FormItem label="Username" name="username" readonly>
-            <Input autocomplete="off" v-model:value="model.username"></Input>
+        <FormItem label="Username" name="username">
+            <Input autocomplete="off" v-model:value="model.username" :readonly="!!id"></Input>
         </FormItem>
         <template v-if="!id">
-            <FormItem label="Password" name="password" readonly>
+            <FormItem label="Password" name="password">
                 <InputPassword
                     autocomplete="off"
                     v-model:value="(model as RegisterUserValue).password"
