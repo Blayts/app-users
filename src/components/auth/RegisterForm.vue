@@ -6,7 +6,7 @@ import { ref, shallowRef } from 'vue';
 import type { Ref } from 'vue';
 import { ErrorTexts } from '../../constants';
 import { useUsers } from '../../hooks/useUsers';
-import type { RegisterUserValue } from '../../types';
+import type { RegisterUserValue } from '../../models/user';
 
 const router = useRouter();
 

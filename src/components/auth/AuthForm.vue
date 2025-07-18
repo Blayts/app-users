@@ -4,15 +4,15 @@ import type { FormProps } from 'ant-design-vue';
 import { ref, shallowRef } from 'vue';
 import type { Ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { useAuth } from '../../hooks/useAuth';
-import type { UserValue } from '../../types';
 import { ErrorTexts } from '../../constants';
+import { useAuth } from '../../hooks/useAuth';
+import type { UserValue } from '../../models/user';
 
 type AuthUserValue = Pick<UserValue, 'password' | 'username'>;
 
 const router = useRouter();
 
-const { login } = useAuth();
+const { currentUser, login } = useAuth();
 const [apiNotification, ContextHolder] = notification.useNotification();
 
 const model: Ref<AuthUserValue> = ref({ password: '', username: '' });
@@ -43,7 +43,11 @@ async function handlerFinish(values: AuthUserValue) {
 
     try {
         await login(values.username, values.password);
-        router.push('/users');
+
+        if(currentUser.value) {
+            const path = '/users' + (currentUser.value.admin ? '': '/' + currentUser.value.id);
+            router.push(path);
+        }
     }
     catch(e: any) {
         apiNotification.error({

@@ -28,7 +28,7 @@ function createState() {
     if(result) {
         state.hash = result.values.reduce((acc, c) => ({ ...acc, [c.username]: c.password }), {});
         state.id = result.id;
-        state.values = result.values.map(createAppUser);
+        state.values = result.values.map((v) => ({ ...createAppUser(v), admin: v.admin }));
     }
 
     function writeState() {
