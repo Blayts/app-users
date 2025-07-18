@@ -101,7 +101,7 @@ getUser();
 </script>
 
 <template>
-    <Form @finish="handlerSave" :model="model" :rules="rules">
+    <Form @finish="handlerSave" :model="model" :rules="rules" :label-col="{ span: 3 }">
         <FormItem label="Name" name="name">
             <Input v-model:value="model.name"></Input>
         </FormItem>
@@ -135,7 +135,7 @@ getUser();
         <FormItem label="Comment" name="comment">
             <Textarea v-model:value="model.comment"></Textarea>
         </FormItem>
-        <FormItem>
+        <FormItem :wrapper-col="{ offset: 3 }">
             <Space>
                 <Button :disabled="!changed" html-type="submit" type="primary">Save</Button>
                 <Button v-if="enableBack" @click="goBack">Back</Button>

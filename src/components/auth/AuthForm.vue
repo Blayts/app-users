@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Button, Form, FormItem, Input, InputPassword, notification, Space } from 'ant-design-vue';
+import { Button, Form, FormItem, Input, InputPassword, notification, Space, Spin } from 'ant-design-vue';
 import type { FormProps } from 'ant-design-vue';
 import { ref, shallowRef } from 'vue';
 import type { Ref } from 'vue';
@@ -17,6 +17,7 @@ const [apiNotification, ContextHolder] = notification.useNotification();
 
 const model: Ref<AuthUserValue> = ref({ password: '', username: '' });
 
+const init = shallowRef(false);
 const loading = shallowRef(false);
 
 const rules: FormProps['rules'] = {
@@ -65,12 +66,11 @@ async function handlerFinish(values: AuthUserValue) {
 
 async function prolongSession() {    
     try {
-        loading.value = true;
         await prolong();
         nextRoute();
     }
     finally {
-        loading.value = false;
+        init.value = true;
     }
 }
 
@@ -78,7 +78,8 @@ prolongSession();
 </script>
 
 <template>
-    <section>
+    <Spin v-if="!init" spinning></Spin>
+    <section v-else>
         <header>
             <h3 style="text-align: center;">Authorize</h3>
         </header>
