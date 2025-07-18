@@ -56,6 +56,20 @@ describe('Use users', () => {
 
         await expect(createUser(user1)).rejects.toThrow(ErrorTexts.userExist);
     });
+    it('Find user', async () => {
+        const { findUser } = useUsers();
+
+        await expect(findUser('test')).rejects.toThrow(ErrorTexts.userNotFound);
+        await expect(findUser(user1.username)).resolves.toEqual({
+            admin: true,
+            age: 0,
+            comment: '',
+            id: 1,
+            name: user1.name,
+            profession: '',
+            username: user1.username,            
+        });
+    })
     it('Update user', async () => {
         const { updateUser } = useUsers();
 

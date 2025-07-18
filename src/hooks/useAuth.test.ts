@@ -23,11 +23,18 @@ describe('Use auth', () => {
         expect(logged.value).toBeTruthy();
         expect(currentUser.value).toEqual(appUser);
     });
+    it('Prolong', async () => {
+        const { prolong } = useAuth();
+
+        await expect(prolong()).resolves.toBeUndefined();
+    }),
     it('Logout', async () => {
-        const { currentUser, logged, logout } = useAuth();
+        const { currentUser, logged, logout, prolong } = useAuth();
 
         await logout();
+
         expect(logged.value).toBeFalsy();
         expect(currentUser.value).toBeUndefined();
+        await expect(prolong()).rejects.toThrow(ErrorTexts.noActiveUser);
     });    
 })

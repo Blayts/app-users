@@ -12,7 +12,7 @@ type AuthUserValue = Pick<UserValue, 'password' | 'username'>;
 
 const router = useRouter();
 
-const { currentUser, login } = useAuth();
+const { currentUser, login, prolong } = useAuth();
 const [apiNotification, ContextHolder] = notification.useNotification();
 
 const model: Ref<AuthUserValue> = ref({ password: '', username: '' });
@@ -38,16 +38,19 @@ function goToRegisterForm() {
     router.push('/register');
 }
 
+function nextRoute() {
+    if(currentUser.value) {
+        const path = '/users' + (currentUser.value.admin ? '': '/' + currentUser.value.id);
+        router.push(path);
+    }
+}
+
 async function handlerFinish(values: AuthUserValue) {
     loading.value = true;
 
     try {
         await login(values.username, values.password);
-
-        if(currentUser.value) {
-            const path = '/users' + (currentUser.value.admin ? '': '/' + currentUser.value.id);
-            router.push(path);
-        }
+        nextRoute();
     }
     catch(e: any) {
         apiNotification.error({
@@ -59,6 +62,19 @@ async function handlerFinish(values: AuthUserValue) {
         loading.value = false;
     }
 }
+
+async function prolongSession() {    
+    try {
+        loading.value = true;
+        await prolong();
+        nextRoute();
+    }
+    finally {
+        loading.value = false;
+    }
+}
+
+prolongSession();
 </script>
 
 <template>

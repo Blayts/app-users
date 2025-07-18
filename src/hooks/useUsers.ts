@@ -111,6 +111,17 @@ export function useUsers() {
             await delay(100);
             return state.value.add(value);
         },
+        async findUser(username: string) {
+            await delay(50);
+
+            const user = users.value.find((u) => u.username === username);
+
+            if(!user) {
+                throw new Error(ErrorTexts.userNotFound);
+            }
+
+            return user;
+        },
         async getUserById(id: number) {
             await delay(100);
             const user = usersById.value[id];
